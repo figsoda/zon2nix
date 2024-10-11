@@ -28,18 +28,7 @@ pub fn write(alloc: Allocator, out: anytype, deps: StringHashMap(Dependency)) !v
     for (entries) |entry| {
         const key = entry.key_ptr.*;
         const dep = entry.value_ptr.*;
-        if (std.mem.startsWith(u8, dep.url, "https://")) {
-            try out.print(
-                \\  {{
-                \\    name = "{s}";
-                \\    path = fetchzip {{
-                \\      url = "{s}";
-                \\      hash = "{s}";
-                \\    }};
-                \\  }}
-                \\
-            , .{ key, dep.url, dep.nix_hash });
-        } else if (std.mem.startsWith(u8, dep.url, "git+https://")) {
+        if (dep.rev.len != 0) {
             try out.print(
                 \\  {{
                 \\    name = "{s}";
@@ -50,8 +39,19 @@ pub fn write(alloc: Allocator, out: anytype, deps: StringHashMap(Dependency)) !v
                 \\    }};
                 \\  }}
                 \\
-            , .{ key, dep.url[4..], dep.rev, dep.nix_hash });
-        } else {}
+            , .{ key, dep.url, dep.rev, dep.nix_hash });
+        } else {
+            try out.print(
+                \\  {{
+                \\    name = "{s}";
+                \\    path = fetchzip {{
+                \\      url = "{s}";
+                \\      hash = "{s}";
+                \\    }};
+                \\  }}
+                \\
+            , .{ key, dep.url, dep.nix_hash });
+        }
     }
 
     try out.writeAll("]\n");

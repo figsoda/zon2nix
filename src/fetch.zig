@@ -39,7 +39,7 @@ pub fn fetch(alloc: Allocator, deps: *StringHashMap(Dependency)) !void {
                 if (dep.rev.len == 0) {
                     break :ref try fmt.allocPrint(alloc, "tarball+{s}", .{dep.url});
                 } else {
-                    break :ref try fmt.allocPrint(alloc, "{s}?rev={s}", .{ dep.url, dep.rev });
+                    break :ref try fmt.allocPrint(alloc, "git+{s}?rev={s}", .{ dep.url, dep.rev });
                 }
             };
             const argv = &[_][]const u8{ nix, "flake", "prefetch", "--json", "--extra-experimental-features", "flakes nix-command", ref };
