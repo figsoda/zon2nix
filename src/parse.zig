@@ -41,7 +41,8 @@ pub fn parse(alloc: Allocator, deps: *StringHashMap(Dependency), file: File) !vo
             var has_hash = false;
 
             const dep_init = ast.fullStructInit(&buf, dep_idx) orelse {
-                return error.parseError;
+                std.log.warn("failed to get dependencies", .{});
+                continue;
             };
 
             for (dep_init.ast.fields) |dep_field_idx| {
